@@ -36,6 +36,12 @@ class TaskAdmin(admin.ModelAdmin):
     increment_multi.short_description = u"增量"
 
 
+@admin.register(models.Control)
+class ControlAdmin(admin.ModelAdmin):
+    list_display = ['id', 'site', 'code', 'num', 'minute', 'hour', 'day', 'month', 'week', 'create_time', 'update_time',
+                    'is_disabled']
+
+
 @admin.register(models.Channel)
 class ChannelAdmin(admin.ModelAdmin):
     list_display = ['id', 'name', 'create_time', 'update_time', 'is_disabled']

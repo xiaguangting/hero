@@ -39,7 +39,10 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'spider'
+    'django_crontab',
+    'captain_america',
+    'spider',
+    # 'push'
 ]
 
 MIDDLEWARE = [
@@ -79,9 +82,9 @@ WSGI_APPLICATION = 'captain_america.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'HOST': '192.168.28.190',
+        'HOST': '39.105.194.66',
         'PORT': '3306',
-        'NAME': 'hero',
+        'NAME': 'hero_test',
         'USER': 'root',
         'PASSWORD': '123456',
         # 'OPTIONS': {
@@ -142,7 +145,11 @@ SUIT_CONFIG = {
         {
             'label': u'爬虫',
             'app': 'spider',
-            'models': ('Site', 'Channel', 'Task', 'User', 'Video', 'Tag', 'VideoTag')
+            'models': ('Site', 'Control', 'Channel', 'Task', 'User', 'Video', 'Tag', 'VideoTag')
         }
     ),
 }
+
+CRONJOBS = [  # 定时任务列表
+    ('47 11 * * *', 'django.core.management.run_spiders', [], {}, '>> /var/run.log'),
+]

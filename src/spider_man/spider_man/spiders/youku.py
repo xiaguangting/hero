@@ -16,7 +16,7 @@ from spider_man.spiders import Eagle, EagleHtml
 class Video(EagleHtml):
     """优酷网页用户主页视频
     """
-    site_id = 3
+    site_id = 1
     parse_type = 'html'
 
     personal_homepage_url = "http://i.youku.com/i/{0}/videos"
