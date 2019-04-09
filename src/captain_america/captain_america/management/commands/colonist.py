@@ -40,17 +40,14 @@ class Command(BaseCommand):
                 comment = COLONIST_CRONTAB_COMMENT.format(i.id)
                 is_exist = False
                 for j in my_user_cron.find_comment(comment):
-                    self.update_crontab_job(j, i.cycle, command, i.is_disabled)
+                    j.setall(i.cycle)
+                    j.enable(not i.is_disabled)
+                    j.set_command(command)
                     is_exist = True
                 if not is_exist:
-                    self.update_crontab_job(my_user_cron.new(), i.cycle, command, i.is_disabled)
+                    job = my_user_cron.new(command)
+                    job.setall(i.cycle)
+                    job.enable(not i.is_disabled)
 
             my_user_cron.write()
             time.sleep(interval)
-
-    def update_crontab_job(self, job, cycle, command, is_disabled):
-        job.setall(cycle)
-        if command:
-            job.set_command(command)
-            job.valid = True
-        job.enable(not is_disabled)
