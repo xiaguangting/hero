@@ -45,7 +45,7 @@ class Command(BaseCommand):
                     j.set_command(command)
                     is_exist = True
                 if not is_exist:
-                    job = my_user_cron.new(command)
+                    job = my_user_cron.new(command, comment)
                     job.setall(i.cycle)
                     job.enable(not i.is_disabled)
 
