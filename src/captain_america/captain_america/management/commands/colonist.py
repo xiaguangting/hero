@@ -44,11 +44,13 @@ class Command(BaseCommand):
                     is_exist = True
                 if not is_exist:
                     self.update_crontab_job(my_user_cron.new(), i.cycle, command, i.is_disabled)
-                    
+
             my_user_cron.write()
             time.sleep(interval)
 
     def update_crontab_job(self, job, cycle, command, is_disabled):
         job.setall(cycle)
-        job.command = command
+        if command:
+            job.set_command(command)
+            job.valid = True
         job.enable(not is_disabled)
