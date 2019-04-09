@@ -24,12 +24,13 @@ class Site(BaseModel):
 class Control(BaseModel):
     site = models.ForeignKey(Site, verbose_name="站点")
     code = models.CharField(max_length=32, verbose_name=u'爬虫CODE')
-    num = models.IntegerField(verbose_name=u'数量', default=1)
-    minute = models.CharField(verbose_name=u'分钟', max_length=16, default='*')
-    hour = models.CharField(verbose_name=u'小时', max_length=16, default='*')
-    day = models.CharField(verbose_name=u'天', max_length=16, default='*')
-    month = models.CharField(verbose_name=u'月', max_length=16, default='*')
-    week = models.CharField(verbose_name=u'周', max_length=16, default='*')
+    cycle = models.CharField(max_length=64, verbose_name=u'执行周期', null=True)
+    # num = models.IntegerField(verbose_name=u'数量', default=1)
+    # minute = models.CharField(verbose_name=u'分钟', max_length=16, default='*')
+    # hour = models.CharField(verbose_name=u'小时', max_length=16, default='*')
+    # day = models.CharField(verbose_name=u'天', max_length=16, default='*')
+    # month = models.CharField(verbose_name=u'月', max_length=16, default='*')
+    # week = models.CharField(verbose_name=u'周', max_length=16, default='*')
 
     class Meta:
         verbose_name = verbose_name_plural = u'控制'

@@ -38,7 +38,7 @@ class TaskAdmin(admin.ModelAdmin):
 
 @admin.register(models.Control)
 class ControlAdmin(admin.ModelAdmin):
-    list_display = ['id', 'site', 'code', 'num', 'minute', 'hour', 'day', 'month', 'week', 'create_time', 'update_time',
+    list_display = ['id', 'site', 'code', 'cycle', 'create_time', 'update_time',
                     'is_disabled']
 
 

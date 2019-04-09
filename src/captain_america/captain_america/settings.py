@@ -153,3 +153,6 @@ SUIT_CONFIG = {
 CRONJOBS = [  # 定时任务列表
     ('47 11 * * *', 'django.core.management.run_spiders', [], {}, '>> /var/run.log'),
 ]
+
+# Commands
+RUN_SPIDERS_INTERVAL = 10

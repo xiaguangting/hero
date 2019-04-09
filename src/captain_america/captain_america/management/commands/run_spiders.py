@@ -1,11 +1,15 @@
+# -*- coding: utf-8 -*-
+import datetime
 import multiprocessing
 import os
+import sys
 import time
-from multiprocessing import Process
 
+from crontab import CronTab
 from django.core.management.base import BaseCommand
 from django.conf import settings
 
+from captain_america.settings import RUN_SPIDERS_INTERVAL
 from spider.models import Control
 
 
@@ -16,31 +20,18 @@ class Command(BaseCommand):
     #     parser.add_argument('poll_id', nargs='+', type=int)
 
     def handle(self, *args, **options):
-        unique_set, process_list = set(), []
+        # 扫描控制表，更新定时任务
+        interval = RUN_SPIDERS_INTERVAL
+        spider_script_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'script')
         while True:
-            unique_set_new = set()
-            for i in Control.objects.filter(is_disabled=False):
-                unique_set_new.add(
-                    ':'.join([str(i.site_id), i.code, str(i.num), i.minute, i.hour, i.day, i.month, i.week]))
-            for i in unique_set_new - unique_set & unique_set_new:
-                print 'test'
-                process_list.append(Process(target=RunSpider, kwargs={'unique_id': i}))
-            unique_set = unique_set_new
-
-            for i in process_list:
-                i.start()
-            for i in process_list:
-                i.join()
-            print 'end'
-            time.sleep(60)
-
-
-class RunSpider(object):
-    def __init__(self, unique_id):
-        print unique_id
-
-    def __call__(self):
-        self.run()
-
-    def run(self):
-        pass
+            offset_time = datetime.datetime.now() - datetime.timedelta(seconds=interval)
+            print offset_time
+            control_qs = Control.objects.filter(is_disabled=False, update_time__gt=offset_time)
+            control_list = []
+            my_user_cron = CronTab(user=True)
+            for i in control_qs:
+                job = my_user_cron.new(command='%s %s' % (spider_script_path, i.code))
+                job.setall(i.cycle)
+                job.set_comment("Captain_america")
+            my_user_cron.write()
+            time.sleep(interval)
