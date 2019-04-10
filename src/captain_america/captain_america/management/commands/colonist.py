@@ -48,7 +48,7 @@ class Command(BaseCommand):
 
     def main(self, crontab):  # 更新Crontab
         offset_time = datetime.datetime.now() - datetime.timedelta(seconds=COLONIST_INTERVAL)
-        control_qs = Control.objects.filter(is_disabled=False, update_time__gt=offset_time)
+        control_qs = Control.objects.filter(update_time__gt=offset_time)
         for i in control_qs:
             is_exist = False
             for j in crontab.find_comment(COLONIST_CRONTAB_COMMENT.format(i.id)):
