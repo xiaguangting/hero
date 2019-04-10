@@ -2,6 +2,7 @@
 import datetime
 import multiprocessing
 import os
+import re
 import sys
 import time
 
@@ -24,12 +25,17 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         # 扫描控制表，更新定时任务
         interval = COLONIST_INTERVAL
+        comment_pattern = re.compile(COLONIST_CRONTAB_COMMENT.format('(\d+)'))
         while True:
             my_user_cron = CronTab(user=True)
 
             control_id_map = {i.id: i for i in Control.objects.all()}
             control_id_set = set(control_id_map)
-            crontab_id_map = {int(i.comment.split(' ')[-1]): i for i in my_user_cron.crons}
+            crontab_id_map = dict()
+            for i in my_user_cron.crons:
+                result = comment_pattern.findall(i.comment)
+                if result:
+                    crontab_id_map[int(result[0])] = i
             crontab_id_set = set(crontab_id_map)
             for i in crontab_id_set - control_id_set:  # 删除Crontab
                 crontab_id_map[i].delete()
