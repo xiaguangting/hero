@@ -72,5 +72,9 @@ class Command(BaseCommand):
         command = '%s %s' % (self.spider_script_path, model_object.code)
         comment = COLONIST_CRONTAB_COMMENT.format(model_object.id)
         job = crontab.new(command, comment)
-        job.setall(model_object.cycle)
         job.enable(not model_object.is_disabled)
+        try:
+            job.setall(model_object.cycle)
+        except:
+            model_object.system_info = u'%s值填写错误' % get_model_field_name(model_object)['system_info']
+            model_object.save()
