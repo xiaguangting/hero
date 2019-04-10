@@ -27,12 +27,19 @@ class Command(BaseCommand):
         while True:
             my_user_cron = CronTab(user=True)
 
-            control_id_set = {i.id for i in Control.objects.all()}
-            crontab_id_set = {int(i.comment.split(' ')[-1]): i for i in my_user_cron.crons}
-            for k, v in crontab_id_set.items():
-                if k not in control_id_set:
-                    v.delete()
+            control_id_map = {i.id: i for i in Control.objects.all()}
+            control_id_set = set(control_id_map)
+            crontab_id_map = {int(i.comment.split(' ')[-1]): i for i in my_user_cron.crons}
+            crontab_id_set = set(crontab_id_map)
+            for i in crontab_id_set - control_id_set:  # 删除Crontab
+                crontab_id_map[i].delete()
+            for i in control_id_set - crontab_id_set:  # 增加Crontab
+                control = control_id_map[i]
+                command = '%s %s' % (spider_script_path, i.code)
+                comment = COLONIST_CRONTAB_COMMENT.format(i.id)
+                self.update_crontab(my_user_cron.new(command), comment, control.cycle, control.is_disabled)
 
+            # 定时更新Crontab
             offset_time = datetime.datetime.now() - datetime.timedelta(seconds=interval)
             control_qs = Control.objects.filter(is_disabled=False, update_time__gt=offset_time)
             for i in control_qs:
@@ -40,14 +47,17 @@ class Command(BaseCommand):
                 comment = COLONIST_CRONTAB_COMMENT.format(i.id)
                 is_exist = False
                 for j in my_user_cron.find_comment(comment):
-                    j.setall(i.cycle)
-                    j.enable(not i.is_disabled)
-                    j.set_command(command)
+                    self.update_crontab(j, comment, i.cycle, i.is_disabled, command)
                     is_exist = True
                 if not is_exist:
-                    job = my_user_cron.new(command, comment)
-                    job.setall(i.cycle)
-                    job.enable(not i.is_disabled)
+                    self.update_crontab(my_user_cron.new(command), comment, i.cycle, i.is_disabled)
 
-            my_user_cron.write()
+            my_user_cron.write()  # 写入Crontab操作
             time.sleep(interval)
+
+    def update_crontab(self, job, comment, cycle, is_disabled, command=None):
+        job.setcomment(comment)
+        job.setall(cycle)
+        job.enable(not is_disabled)
+        if command is not None:
+            job.set_command(command)
