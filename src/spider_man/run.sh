@@ -1,3 +1,3 @@
 #!/bin/bash
 
-scrapy crawl $*
+nohup scrapy crawl $* >/var/log/hero/spider-man/tmp.log

@@ -61,7 +61,7 @@ class Command(BaseCommand):
         try:
             job.setall(model_object.cycle)
         except:
-            model_object.system_info = u'%s值填写错误' % get_model_field_name(model_object)['system_info']
+            model_object.system_info = u'%s值填写错误' % get_model_field_name(model_object)['cycle']
             model_object.save()
         else:
             if model_object.system_info:
@@ -76,5 +76,9 @@ class Command(BaseCommand):
         try:
             job.setall(model_object.cycle)
         except:
-            model_object.system_info = u'%s值填写错误' % get_model_field_name(model_object)['system_info']
+            model_object.system_info = u'%s 值填写错误' % get_model_field_name(model_object)['cycle']
             model_object.save()
+        else:
+            if model_object.system_info:
+                model_object.system_info = ''
+                model_object.save()
