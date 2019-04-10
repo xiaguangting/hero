@@ -7,15 +7,17 @@ import time
 from crontab import CronTab
 from django.core.management.base import BaseCommand
 
-from captain_america.settings import COLONIST_INTERVAL, SPIDER_PROJECT_NAME, SPIDER_PROJECT_SCRIPT, \
-    COLONIST_CRONTAB_COMMENT
+from captain_america.settings import COLONIST_INTERVAL, SPIDER_PROJECT_NAME, SPIDER_PROJECT_SCRIPT_NAME, \
+    COLONIST_CRONTAB_COMMENT, COLONIST_COMMAND_FORMAT
 from captain_america.utils import get_model_field_name
 from spider.models import Control
 
 
 class Command(BaseCommand):
     help = 'Run spiders by Control'
-    spider_script_path = os.path.join(os.path.dirname(os.getcwd()), SPIDER_PROJECT_NAME, SPIDER_PROJECT_SCRIPT)
+    spider_project_path = os.path.join(
+        os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))),
+        SPIDER_PROJECT_NAME)
     comment_pattern = re.compile(COLONIST_CRONTAB_COMMENT.format('(\d+)'))
 
     # def add_arguments(self, parser):
@@ -56,7 +58,8 @@ class Command(BaseCommand):
                 self.add_crontab(crontab, i)
 
     def alter_crontab(self, job, model_object):
-        job.set_command('%s %s' % (self.spider_script_path, model_object.code))
+        job.set_command(
+            COLONIST_COMMAND_FORMAT.format(self.spider_project_path, SPIDER_PROJECT_SCRIPT_NAME, model_object.code))
         job.enable(not model_object.is_disabled)
         try:
             job.setall(model_object.cycle)
@@ -69,7 +72,7 @@ class Command(BaseCommand):
                 model_object.save()
 
     def add_crontab(self, crontab, model_object):
-        command = '%s %s' % (self.spider_script_path, model_object.code)
+        command = COLONIST_COMMAND_FORMAT.format(self.spider_project_path, SPIDER_PROJECT_SCRIPT_NAME, model_object.code)
         comment = COLONIST_CRONTAB_COMMENT.format(model_object.id)
         job = crontab.new(command, comment)
         job.enable(not model_object.is_disabled)

@@ -162,8 +162,9 @@ CRONJOBS = [  # 定时任务列表
 
 # Commands
 COLONIST_INTERVAL = 10
+COLONIST_COMMAND_FORMAT = 'cd {0} && ./{1} {2}'
 COLONIST_CRONTAB_COMMENT = 'captain_america.spider.models.control.id ==> {0}'
 
 # Spider Project
 SPIDER_PROJECT_NAME = 'spider_man'
-SPIDER_PROJECT_SCRIPT = 'run.sh'
+SPIDER_PROJECT_SCRIPT_NAME = 'run.sh'
