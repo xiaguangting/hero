@@ -10,3 +10,10 @@ class BaseModel(models.Model):  # 模型基类
     class Meta:
         abstract = True
         ordering = ["-create_time"]
+
+
+def get_model_field_name(model):
+    """
+    获取model的verbose_name和name的字段
+    """
+    return {i.name: i.verbose_name for i in model._meta.fields}

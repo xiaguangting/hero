@@ -1,17 +1,15 @@
 # -*- coding: utf-8 -*-
 import datetime
-import multiprocessing
 import os
 import re
-import sys
 import time
 
 from crontab import CronTab
 from django.core.management.base import BaseCommand
-from django.conf import settings
 
 from captain_america.settings import COLONIST_INTERVAL, SPIDER_PROJECT_NAME, SPIDER_PROJECT_SCRIPT, \
     COLONIST_CRONTAB_COMMENT
+from captain_america.utils import get_model_field_name
 from spider.models import Control
 
 
@@ -59,8 +57,16 @@ class Command(BaseCommand):
 
     def alter_crontab(self, job, model_object):
         job.set_command('%s %s' % (self.spider_script_path, model_object.code))
-        job.setall(model_object.cycle)
         job.enable(not model_object.is_disabled)
+        try:
+            job.setall(model_object.cycle)
+        except:
+            model_object.system_info = u'%s值填写错误' % get_model_field_name(model_object)['system_info']
+            model_object.save()
+        else:
+            if model_object.system_info:
+                model_object.system_info = ''
+                model_object.save()
 
     def add_crontab(self, crontab, model_object):
         command = '%s %s' % (self.spider_script_path, model_object.code)

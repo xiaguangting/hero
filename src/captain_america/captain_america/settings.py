@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'django_crontab',
     'captain_america',
     'spider',
+    'warehouse'
     # 'push'
 ]
 
@@ -145,7 +146,12 @@ SUIT_CONFIG = {
         {
             'label': u'爬虫',
             'app': 'spider',
-            'models': ('Site', 'Control', 'Channel', 'Task', 'User', 'Video', 'Tag', 'VideoTag')
+            'models': ('Site', 'Control', 'Channel', 'Task')
+        },
+        {
+            'label': u'仓库',
+            'app': 'warehouse',
+            'models': ('User', 'Video', 'Tag', 'VideoTag')
         }
     ),
 }

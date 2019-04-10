@@ -15,8 +15,7 @@ from importlib import import_module
 from scrapy.spiders import Spider
 from scrapy.http import Request
 
-from spider_man import get_site, get_task, is_exist, TABLE_MAP, batch_video_tag_relation, alter_task_status, \
-    alter_attribute, models, get_tag, get_user
+from spider_man import get_site, get_task, is_exist, TABLE_MAP, get_tag, get_user, spider_models, warehouse_models
 from spider_man.items import VideoItem
 
 
@@ -90,8 +89,6 @@ class Eagle(Spider):
         except Exception, e:
             logging.log(logging.ERROR, traceback.format_exc())
 
-
-
     def handle_extract_fail_key(self, fail_key_list, key):
         logging.log(logging.INFO, 'This key %s extraction failed' % key.capitalize())
         fail_key_list.append(key)
@@ -154,8 +151,8 @@ class Eagle(Spider):
                 yield item  # 交由Pipelines
 
                 if tag_list:  # 批量处理视频标签关联
-                    models.VideoTag.objects.bulk_create(
-                        [models.VideoTag(video=item.instance, tag=tag) for tag in tag_list])
+                    warehouse_models.VideoTag.objects.bulk_create(
+                        [warehouse_models.VideoTag(video=item.instance, tag=tag) for tag in tag_list])
 
     def scavenger_checks(self, result):  # 清道夫返回结果检查
         for k, v in result.items():
@@ -169,7 +166,7 @@ class Eagle(Spider):
         }
         if task.type == 1 and self.full_increment:
             update_fields['type'] = 2
-        alter_attribute("Task", [task.id], update_fields)
+        spider_models.Task.objects.filter(id=task.id).update(**update_fields)
 
     def update_headers(self, step):  # 更新请求头  step ==> 步骤
         pass
@@ -266,7 +263,7 @@ class EagleJson(Eagle):
                 continue
             yield item
             # 批量处理视频标签关联
-            models.VideoTag.objects.bulk_create([models.VideoTag(video=item.instance, tag=tag) for tag in tag_list])
+            warehouse_models.VideoTag.objects.bulk_create([warehouse_models.VideoTag(video=item.instance, tag=tag) for tag in tag_list])
 
         for k, v in self.turn_page_fields_map.items():
             meta[k] = self.get_member_via_path(resp_data, v)

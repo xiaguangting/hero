@@ -8,7 +8,7 @@
 import scrapy
 from scrapy_djangoitem import DjangoItem
 
-from spider_man import models
+from spider_man import warehouse_models
 
 
 class SpiderManItem(scrapy.Item):
@@ -18,4 +18,4 @@ class SpiderManItem(scrapy.Item):
 
 
 class VideoItem(DjangoItem):
-    django_model = models.Video
+    django_model = warehouse_models.Video
