@@ -11,21 +11,26 @@ from spider.models import Site, Channel
 
 @python_2_unicode_compatible
 class Task(BaseModel):
+    LINDA = 1
+    VIDEO = 1
     STATUS_LIST = [
         (1, u"待推送"),
-        (2, u"推送中"),
-        (3, u"已推送")
+        (2, u"推送中")
+    ]
+    TARGET_LIST = [
+        (LINDA, u'Linda')
     ]
     TYPE_LIST = [
-        (1, u'Linda')
+        (VIDEO, u'视频')
     ]
 
-    site = models.ForeignKey(Site, verbose_name="站点")
-    channel = models.ForeignKey(Channel, verbose_name="频道", null=True)
+    site = models.ForeignKey(Site, verbose_name="站点", related_name='push_task_set')
+    channel = models.ForeignKey(Channel, verbose_name="频道", null=True, related_name='push_channel_set', blank=True)
     name = models.CharField(max_length=128, verbose_name=u'名称', null=True, blank=True)
     priority = models.IntegerField(verbose_name=u'优先级')
+    target = models.PositiveSmallIntegerField(choices=TARGET_LIST, default=1, verbose_name=u"目标")
+    type = models.PositiveSmallIntegerField(choices=TYPE_LIST, default=1, verbose_name=u"类型")
     status = models.PositiveSmallIntegerField(choices=STATUS_LIST, default=1, verbose_name=u"状态")
-    type = models.PositiveSmallIntegerField(choices=TYPE_LIST, default=1, verbose_name=u"目标")
 
     class Meta:
         verbose_name = verbose_name_plural = u'任务'

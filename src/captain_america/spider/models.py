@@ -40,11 +40,16 @@ class Control(BaseModel):
         return MODEL_OBJECT_DISPLAY.format(u'Control', self.id)
 
 
+@python_2_unicode_compatible
 class Channel(BaseModel):
     name = models.CharField(max_length=32, verbose_name=u'名称')
 
     class Meta:
         verbose_name = verbose_name_plural = u'频道'
+
+    def __str__(self):
+        name = self.name if self.name else ''
+        return MODEL_OBJECT_DISPLAY.format(self.id, name)
 
 
 @python_2_unicode_compatible
@@ -58,7 +63,7 @@ class Task(BaseModel):
         (2, u'增量')
     ]
 
-    site = models.ForeignKey(Site, verbose_name="站点")
+    site = models.ForeignKey(Site, verbose_name="站点", related_name='spider_task_set')
     name = models.CharField(max_length=128, verbose_name=u'名称', null=True, blank=True)
     url = models.CharField(max_length=256, verbose_name="地址")
     priority = models.IntegerField(verbose_name=u'优先级')

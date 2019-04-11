@@ -10,10 +10,11 @@ from warehouse import models
 @admin.register(models.Video)
 class VideoAdmin(admin.ModelAdmin):
     list_display = ['id', 'task', 'site', 'cover_show', 'name', 'play', 'channel', 'duration', 'play_num', 'like_num',
-                    'comment_num', 'user', 'upload_time', 'third_id', 'oid', 'push_status', 'create_time', 'update_time',
+                    'comment_num', 'user', 'upload_time', 'third_id', 'oid', 'push_status_linda', 'create_time', 'update_time',
                     'is_disabled']
-    list_filter = ['push_status']
+    list_filter = ['push_status_linda']
     search_fields = ['name']
+    list_per_page = 10
 
     def cover_show(self, obj):
         if obj.cover:

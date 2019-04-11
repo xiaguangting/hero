@@ -38,10 +38,11 @@ class User(CrawlData):
 
 @python_2_unicode_compatible
 class Video(CrawlData):
-    PUSH_STATUS_LIST = [
-        (1, u"待推送"),
-        (2, u"推送中"),
-        (3, u"已推送")
+    WAIT_PUSH, BEING_PUSH, FINISH_PUSH = 1, 2, 3
+    PUSH_STATUS_LINDA_LIST = [
+        (WAIT_PUSH, u"待推送"),
+        (BEING_PUSH, u"推送中"),
+        (FINISH_PUSH, u"已推送")
     ]
 
     name = models.CharField(max_length=256, verbose_name=u'名称')
@@ -57,7 +58,8 @@ class Video(CrawlData):
     upload_time = models.DateTimeField(verbose_name=u"用户上传时间", null=True)
 
     oid = models.CharField(max_length=64, verbose_name=u'风行图片ID', null=True)
-    push_status = models.PositiveSmallIntegerField(choices=PUSH_STATUS_LIST, default=1, verbose_name=u"推送状态")
+    push_status_linda = models.PositiveSmallIntegerField(choices=PUSH_STATUS_LINDA_LIST, default=1,
+                                                         verbose_name=u"推送状态(Linda)")
     is_parse = models.BooleanField(u"是否解析Url", default=False)
 
     class Meta:

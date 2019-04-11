@@ -32,18 +32,19 @@ ALLOWED_HOSTS = ['*']
 # Application definition
 
 INSTALLED_APPS = [
-    'suit',
+    'suit',  # Admin模板
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'django_crontab',
+    'django_crontab',  # 定时任务
     'captain_america',
-    'spider',
-    'warehouse'
-    # 'push'
+    'spider',  # 爬虫
+    'warehouse',  # 仓库
+    'push',  # 推送
+    'monitor',  # 监控
 ]
 
 MIDDLEWARE = [
@@ -152,6 +153,16 @@ SUIT_CONFIG = {
             'label': u'仓库',
             'app': 'warehouse',
             'models': ('User', 'Video', 'Tag', 'VideoTag')
+        },
+        {
+            'label': u'推送',
+            'app': 'push',
+            'models': ('Task',)
+        },
+        {
+            'label': u'监控',
+            'app': 'monitor',
+            'models': ()
         }
     ),
 }
@@ -168,3 +179,6 @@ COLONIST_CRONTAB_COMMENT = 'captain_america.spider.models.control.id ==> {0}'
 # Spider Project
 SPIDER_PROJECT_NAME = 'spider_man'
 SPIDER_PROJECT_SCRIPT_NAME = 'run.sh'
+
+# Img server
+FUNSHION_IMG_SERVER = 'http://img.funshion.com/sup'
