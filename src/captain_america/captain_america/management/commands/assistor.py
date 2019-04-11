@@ -49,6 +49,7 @@ def video_push(task):
         return
     video_qs = Video.objects.filter(site=task.site, channel=task.channel, **{status_fields: Video.WAIT_PUSH})
     if video_qs:
+        # todo 需要枷锁
         video_qs = video_qs.order_by('create_time')
         push_qs = video_qs[:100]  # 获取数据
         Video.objects.filter(id__in=[i.id for i in push_qs]).update(**{status_fields: Video.BEING_PUSH})  # 修改推送状态
