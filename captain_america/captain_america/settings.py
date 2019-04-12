@@ -38,7 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
-    'django.contrib.staticfiles',
+    'django.contrib.staticfiles',  # 静态文件
     'django_crontab',  # 定时任务
     'spider',  # 爬虫
     'warehouse',  # 仓库
@@ -128,11 +128,11 @@ DATETIME_FORMAT = "Y-m-d H:i:s"
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.11/howto/static-files/
-
 STATIC_URL = '/static/'
-STATICFILES_DIRS = (
-    os.path.join(BASE_DIR, 'static'),
-)
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')  # python manage.py collectstatic
+# STATICFILES_DIRS = (  # django handle static
+#     os.path.join(BASE_DIR, 'static'),
+# )
 
 # Format
 MODEL_OBJECT_DISPLAY = u'{0}_{1}'
