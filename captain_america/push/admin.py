@@ -9,9 +9,9 @@ from push import models
 
 @admin.register(models.Task)
 class TaskAdmin(admin.ModelAdmin):
-    list_display = ['id', 'site', 'channel', 'name', 'priority', 'target', 'type', 'status', 'create_time',
+    list_display = ['id', 'site', 'channel', 'type', 'target', 'status', 'process_num', 'create_time',
                     'update_time', 'is_disabled']
-    fields = ['site', 'channel', 'name', 'priority', 'target', 'type', 'is_disabled']
+    fields = ['site', 'channel', 'process_num', 'type', 'target', 'status', 'is_disabled']
     list_filter = ['target', 'type', 'status']
     actions = ['disable_multi', 'enable_multi']
 

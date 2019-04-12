@@ -1,8 +1,11 @@
 # -*- coding: utf-8 -*-
 import json
+import time
+from multiprocessing.pool import RUN, CLOSE
 
 import django
 import requests
+from django.db import transaction
 
 from captain_america.settings import FUNSHION_IMG_SERVER
 
@@ -18,26 +21,34 @@ from warehouse.models import Video
 
 class Command(BaseCommand):
     help = 'Push'
-    task_dict = {}
 
     # def add_arguments(self, parser):
     #     parser.add_argument('poll_id', nargs='+', type=int)
 
     def handle(self, *args, **options):
-        # 扫描推送任务表
-        pool = Pool(4)
+        process_num = 4
         while True:
-            task_qs = Task.objects.filter(is_disabled=False)
+            with transaction.atomic():
+                task_qs = Task.objects.filter(is_disabled=False, status=Task.WAIT_GET, process_num__gt=0)
+                print task_qs
+                if not task_qs:
+                    time.sleep(3)
+                    continue
+                Task.objects.filter(id__in=[i.id for i in task_qs]).update(status=Task.BEING_EXECUTE)
+
             for i in task_qs:
-                pool.apply_async(sub_process_func, args=(i,))
-            pool.close()
-            pool.join()
-            print 'bingo'
+                for j in range(i.process_num):
+                    process = Process(sub_process_func, args=(i,))
+                    process.start()
+                    process.join()
 
 
 def sub_process_func(task):
+    print 'sub_process_func'
     if task.type == Task.VIDEO:
         video_push(task)
+    task.status = Task.WAIT_GET
+    task.save()
 
 
 def video_push(task):
@@ -49,10 +60,9 @@ def video_push(task):
         return
     video_qs = Video.objects.filter(site=task.site, channel=task.channel, **{status_fields: Video.WAIT_PUSH})
     if video_qs:
-        # todo 需要枷锁
-        video_qs = video_qs.order_by('create_time')
-        push_qs = video_qs[:100]  # 获取数据
-        Video.objects.filter(id__in=[i.id for i in push_qs]).update(**{status_fields: Video.BEING_PUSH})  # 修改推送状态
+        with transaction.atomic():
+            push_qs = video_qs.order_by('create_time')[:100]  # 获取数据
+            Video.objects.filter(id__in=[i.id for i in push_qs]).update(**{status_fields: Video.BEING_PUSH})  # 修改推送状态
         for i in push_qs:  # 执行推送
             try:
                 result = push_func(i)

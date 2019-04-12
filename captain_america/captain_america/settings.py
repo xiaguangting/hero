@@ -40,7 +40,6 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django_crontab',  # 定时任务
-    'captain_america',
     'spider',  # 爬虫
     'warehouse',  # 仓库
     'push',  # 推送
@@ -131,6 +130,9 @@ DATETIME_FORMAT = "Y-m-d H:i:s"
 # https://docs.djangoproject.com/en/1.11/howto/static-files/
 
 STATIC_URL = '/static/'
+STATICFILES_DIRS = (
+    os.path.join(BASE_DIR, 'static'),
+)
 
 # Format
 MODEL_OBJECT_DISPLAY = u'{0}_{1}'
